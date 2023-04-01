@@ -1,0 +1,212 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Library Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #007bff;
+            color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+            .header h1 {
+                margin: 0;
+            }
+
+            .header button {
+                border: none;
+                background-color: #fff;
+                color: #007bff;
+                padding: 10px 20px;
+                border-radius: 5px;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+            }
+
+                .header button:hover {
+                    background-color: #007bff;
+                    color: #fff;
+                }
+
+        .navbar {
+            display: flex;
+            justify-content: center;
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+            .navbar a {
+                color: #007bff;
+                text-decoration: none;
+                padding: 10px;
+                margin: 0 10px;
+                font-size: 16px;
+                font-weight: bold;
+                transition: color 0.2s ease-in-out;
+            }
+
+                .navbar a:hover {
+                    color: #0056b3;
+                }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Library Website</h1>
+        <div>
+
+            <button onclick="location.href='/Account/Login'">Logout</button>
+
+        </div>
+    </div>
+    <div class="navbar">
+        <a href="/StudentInterface/Home">Home</a>
+        <a href="/StudentInterface/History">Borrow History</a>
+        <a href="/BookManagement/Book">Book Management</a>
+    </div>
+</body>
+</html>
+
+
+
+
+@model IEnumerable<ClassLibrary.Models.History>
+@using ClassLibrary.Models
+@{
+    ViewData["Title"] = "Histoty";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    List<History> HistoryList = ViewBag.historyList;
+    List<Account> AccountList = ViewBag.accountList;
+}
+
+<h1>Histoty</h1>
+
+@*<a asp-action="History">Back to List</a>*@
+
+<p>
+    <a asp-action="Create">Create New History</a>
+</p>
+
+<button style="border:none;background:none;color:blue;padding:unset"
+        onclick=" window.location='/BookManagement/Book'">
+    Book Management
+</button>
+<br />
+
+<input type="radio" name="Borrowing" value="1" style="margin-right:10px;" onclick=" window.location='/LibraryManagement/Filter?mode=1'" />Ordering
+<input type="radio" name="Borrowing" value="2" style="margin-right:10px;" onclick=" window.location='/LibraryManagement/Filter?mode=2'" />Borrowing
+<input type="radio" name="Borrowing" value="3" style="margin-right:10px;" onclick=" window.location='/LibraryManagement/Filter?mode=3'" />Overdue
+<input type="radio" name="Borrowing" value="4" style="margin-right:10px;" onclick=" window.location='/LibraryManagement/Filter?mode=4'" />Returned
+<input type="radio" name="Borrowing" value="5" style="margin-right:10px;" onclick=" window.location='/LibraryManagement/Filter?mode=5'" />All
+
+<span style="margin-left:20px;"></span>
+
+<select id="Sort" name="Sort" onchange="Sort()">
+    <option value="6">
+        Sort by Borrow Date
+    </option>
+    <option value="6">
+        Ascending
+    </option>
+    <option value="7">
+        Descending
+    </option>
+</select>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                HistoryID
+            </th>
+            <th>
+                Librarian
+            </th>
+            <th>
+                Student
+            </th>
+            <th>
+                BookID
+            </th>
+            <th>
+                BorrowDate
+            </th>
+            <th>
+                ReturnDeadline
+            </th>
+            <th>
+                ReturnedDate
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in @HistoryList)
+        {
+            <tr>
+                <td>
+                    @item.HistoryId
+                </td>
+                @foreach (var libra in @AccountList)
+                {
+                    if (libra.AccountId == item.LibrarianId)
+                    {
+                        <td>
+                            @libra.Email
+                        </td>
+                    }
+                }
+                @foreach (var stu in @AccountList)
+                {
+                    if (stu.AccountId == item.StudentId)
+                    {
+                        <td>
+                            @stu.Email
+                        </td>
+                    }
+                }
+                <td>
+                    @item.BookId
+                </td>
+                <td>
+                    @item.BorrowDate
+                </td>
+                <td>
+                    @item.ReturnDeadline
+                </td>
+                <td>
+                    @item.ReturnedDate
+                </td>
+
+                <td>
+                    @*@Html.ActionLink("Detail", "Detail", new { id = @item.HistoryId  })*@
+                    @Html.ActionLink("Returned", "Returned", new {  id =  @item.HistoryId}) |
+                    @Html.ActionLink("Borrowed", "Borrowed", new {  id =   @item.HistoryId })
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    function Sort() {
+        var valuee = document.getElementById("Sort").value;
+        window.location = '/LibraryManagement/Filter?mode=' + valuee
+    }
+</script>
